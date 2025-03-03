@@ -10,4 +10,5 @@
 </body>
 
 @fluxScripts
+
 </html>
