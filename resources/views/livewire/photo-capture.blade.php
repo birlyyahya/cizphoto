@@ -33,7 +33,7 @@
                     <flux:button variant="primary">Next</flux:button>
                 </flux:modal.trigger>
 
-                <flux:modal name="next" class="w-2/3 md:w-full max-w-2xl max-h-screen bg-zinc-200 gap-5">
+                <flux:modal name="next" class="w-3/4 h-4/5 md:w-full max-w-2xl max-h-screen bg-zinc-200 gap-5">
                     <div x-data="{ frameColor: '#000' }" class="grid grid-cols-1 md:grid-cols-2 h-full gap-5">
                         <div class="frame mb-2 flex flex-col order-last md:order-first gap-5">
                             <label class="color-picker flex items-center border bg-white rounded-lg px-2 py-1 border-slate-300 gap-3">
