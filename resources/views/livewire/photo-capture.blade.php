@@ -3,14 +3,15 @@
         <!-- Camera Preview Section -->
         <div class="flex-1 justify-center">
             <div class="relative justify-items-center">
-                <video id="video" autoplay class="w-[640px] h-[480px] object-cover bg-gray-100 rounded-lg shadow-inner -scale-x-100"></video>
-
-                <div id="timerOverlay" class="absolute inset-0 flex items-center justify-center hidden">
+                <video id="video" autoplay class="md:w-[640px] md:h-[480px] object-cover bg-gray-100 rounded-lg shadow-inner -scale-x-100"></video>
+                <div id="countDisplay" class="absolute inset-0 flex items-center justify-center hidden">
                     <div class="text-white text-9xl font-bold" id="timerDisplay">3</div>
+                </div>
+                <div id="timerOverlay" class="absolute inset-0 bg-black flex items-center justify-center hidden">
                 </div>
             </div>
             <div class="mt-4 flex justify-center space-x-4">
-                <flux:button icon="camera" id="takePhotoButton" variant="primary" onclick="takePhotoWithCapture(event)">
+                <flux:button icon="camera" id="takePhotoButton" variant="primary" onclick="runSquencePhoto(event)">
                     Take a Cizz!
                 </flux:button>
 
@@ -25,7 +26,7 @@
                 <canvas id="takePhotoCanvas3" wire:ignore class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
             </div>
             <div class="mt-4 text-center">
-                <flux:modal.trigger name="next" class="" id="nextStep">
+                <flux:modal.trigger name="next" class="hidden" id="nextStep">
                     <flux:button variant="primary">Next</flux:button>
                 </flux:modal.trigger>
 
@@ -45,7 +46,7 @@
                                 <flux:button class="self-end">Send Email</flux:button>
                             </div>
                         </div>
-                        <div id="framePhotobooth" class="space-y-2 flex flex-col w-fit p-5 m-auto items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
+                        <div id="framePhotobooth" class="space-y-2 flex flex-col w-full md:w-fit p-5 m-auto md:justify-normal  items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
                             {{-- @foreach ($this->photo as $key => $value ) --}}
                             <div class="relative">
                                 <canvas id="previewDownload1" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
@@ -110,9 +111,11 @@
                 // @this.call('addPhoto', canvas.toDataURL('image/png'));
             })
             .catch(error => console.error("Error taking photo:", error));
-
+        setTimeout(() => {
+            countDisplay.classList.add('hidden');
+            timerOverlay.classList.add('hidden');
+        }, 100);
         currentPhotoIndex++;
-        timerOverlay.classList.add('hidden');
     }
 
     function runSquencePhoto(e) {
@@ -127,19 +130,22 @@
 
         let count = 3; // Hitungan mundur
 
-        timerOverlay.classList.remove('hidden');
         timerDisplay.textContent = count;
+        takePhotoButton.textContent = 'Get Ready!';
+        countDisplay.classList.remove('hidden');
 
         const countdownInterval = setInterval(() => {
             count--;
             timerDisplay.textContent = count;
+            takePhotoButton.textContent = 'Standby!';
 
             if (count === 0) {
+                takePhotoButton.textContent = 'Cizz!';
+                timerOverlay.classList.remove('hidden');
                 clearInterval(countdownInterval);
 
                 // Ambil foto saat hitungan mencapai 0
                 takePhotoWithCapture(e);
-                console.log(currentPhotoIndex);
 
                 // Jika masih ada foto yang perlu diambil, lanjutkan
                 setTimeout(() => {
@@ -149,6 +155,7 @@
                         document.getElementById('nextStep').classList.remove('hidden');
                         document.getElementById('takePhotoButton').setAttribute('disabled', 'true');
                         timerOverlay.classList.add('hidden');
+                        takePhotoButton.textContent = 'Done';
                     }
                 }, 500);
             }
