@@ -3,7 +3,9 @@
         <!-- Camera Preview Section -->
         <div class="flex-1 justify-center">
             <div class="relative justify-items-center">
-                <video id="video" autoplay class="md:w-[640px] md:h-[480px] object-cover bg-gray-100 rounded-lg shadow-inner -scale-x-100"></video>
+                <video id="video" autoplay class="w-[320px] h-[180px] md:w-[640px] md:h-[480px]
+                       object-cover bg-gray-100 rounded-lg shadow-inner -scale-x-100">
+                </video>
                 <div id="countDisplay" class="absolute inset-0 flex items-center justify-center hidden">
                     <div class="text-white text-9xl font-bold" id="timerDisplay">3</div>
                 </div>
@@ -21,9 +23,10 @@
         <!-- Photo Result Section -->
         <div class="flex-0 justify-center">
             <div class="relative flex-row space-y-1 justify-items-center">
-                <canvas id="takePhotoCanvas1" wire:ignore class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
-                <canvas id="takePhotoCanvas2" wire:ignore class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
-                <canvas id="takePhotoCanvas3" wire:ignore class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                <canvas id="takePhotoCanvas1" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner">
+                </canvas>
+                <canvas id="takePhotoCanvas2" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                <canvas id="takePhotoCanvas3" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
             </div>
             <div class="mt-4 text-center">
                 <flux:modal.trigger name="next" class="hidden" id="nextStep">
