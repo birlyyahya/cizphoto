@@ -1,40 +1,14 @@
 <x-layouts.guest>
-
-    <div id="results">Your captured image will appear here...</div>
-	
-	<h1>WebcamJS Test Page</h1>
-	
-	<div id="my_camera"></div>
-	
-	<!-- First, include the Webcam.js JavaScript Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js" integrity="sha512-dQIiHSl2hr3NWKKLycPndtpbh5iaHLo6MwrXm7F0FM5e+kL2U16oE9uIwPHUl6fQBeCthiEuV/rzP3MiAB8Vfw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	
-	<!-- Configure a few settings and attach camera -->
-	<script language="JavaScript">
-		Webcam.set({
-			width: 320,
-			height: 240,
-			image_format: 'jpeg',
-			jpeg_quality: 90
-		});
-		Webcam.attach( '#my_camera' );
-	</script>
-	
-	<!-- A button for taking snaps -->
-	<form>
-		<input type=button value="Take Snapshot" onClick="take_snapshot()">
-	</form>
-	
-	<!-- Code to handle taking the snapshot and displaying it locally -->
-	<script language="JavaScript">
-		function take_snapshot() {
-			// take snapshot and get image data
-			Webcam.snap( function(data_uri) {
-				// display results in page
-				document.getElementById('results').innerHTML = 
-					'<h2>Here is your image:</h2>' + 
-					'<img src="'+data_uri+'"/>';
-			} );
-		}
-	</script>
+      <div class="m-30 p-10 h-fit space-y-4 text-center z-20 relative">
+         <div class="flex justify-center items-center gap-8">
+            <flux:subheading size="xl" class="italic">est</flux:subheading>
+            <div class="text-center text-7xl italic">cizzphoto</div>
+            <flux:subheading size="xl" class="italic">2025</flux:subheading>
+         </div>
+         <flux:subheading size="sm" class="w-1/3 m-auto">Ini websitenya cizburgerzz selamat fotoooo yangg cantikssssss
+        </flux:subheading>
+         <div class="m-10">
+            <flux:button variant="primary" href="/photo">Let’s Go!</flux:button>
+         </div>
+      </div>
 </x-layouts.guest>

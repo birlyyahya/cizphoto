@@ -10,10 +10,16 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "bacon/bacon-qr-code": "^3.0",
+        "barryvdh/laravel-snappy": "^1.0",
+        "h4cc/wkhtmltoimage-i386": "0.12.x",
+        "h4cc/wkhtmltopdf-i386": "0.12.x",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.0",
-        "livewire/volt": "^1.6.7"
+        "livewire/volt": "^1.6.7",
+        "pragmarx/google2fa-laravel": "^2.3",
+        "pragmarx/google2fa-qrcode": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
