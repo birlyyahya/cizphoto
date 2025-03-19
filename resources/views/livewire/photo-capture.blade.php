@@ -10,7 +10,7 @@
                 </div>
             </div>
             <div class="mt-4 flex justify-center space-x-4">
-                <flux:button icon="camera" id="takePhotoButton" variant="primary" onclick="runSquencePhoto()">
+                <flux:button icon="camera" id="takePhotoButton" variant="primary" onclick="runSquencePhoto(event)">
                     Take a Cizz!
                 </flux:button>
 
@@ -25,7 +25,7 @@
                 <canvas id="takePhotoCanvas3" wire:ignore class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
             </div>
             <div class="mt-4 text-center">
-                <flux:modal.trigger name="next" class="" id="nextStep">
+                <flux:modal.trigger name="next" class="hidden" id="nextStep">
                     <flux:button variant="primary">Next</flux:button>
                 </flux:modal.trigger>
 
@@ -41,7 +41,7 @@
                                 </x-partials.radioColor>
                             </div>
                             <div class="flex grow-1 gap-5 mt-5 p-10 md:m-0 md:p-0 md:justify-normal justify-center">
-                                <flux:button id="downloadPhoto" @click="downloadImage" variant="primary" class="self-end">Download</flux:button>
+                                <flux:button id="downloadPhoto" @click="downloadImage(event)" variant="primary" class="self-end">Download</flux:button>
                                 <flux:button class="self-end">Send Email</flux:button>
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                             <div class="relative">
                                 <canvas id="takePhotoCanvas{{ $key }}" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
-                                    <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner">
+                                    <img src="{{ session($value) }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy">
                                 </div>
                             </div>
                             @endforeach
@@ -86,7 +86,8 @@
         })
         .catch(error => console.error("Error accessing camera:", error));
 
-    function takePhotoWithCapture() {
+    function takePhotoWithCapture(e) {
+        e.preventDefault();
         if (!imageCapture) return console.error("Camera not initialized");
 
         imageCapture.grabFrame()
@@ -94,7 +95,6 @@
                 const canvas = document.getElementById('takePhotoCanvas' + currentPhotoIndex);
                 drawMirroredCanvas(canvas, imageBitmap);
                 @this.call('addPhoto', canvas.toDataURL('image/png'));
-                // downloadImage();
             })
             .catch(error => console.error("Error taking photo:", error));
 
@@ -102,7 +102,9 @@
         timerOverlay.classList.add('hidden');
     }
 
-    function runSquencePhoto() {
+    function runSquencePhoto(e) {
+        e.preventDefault();
+        document.getElementById('takePhotoButton').setAttribute('disabled', 'true');
         if (!imageCapture) return console.error("Camera not initialized");
 
         // Jika sudah mencapai batas foto, langsung keluar
@@ -123,13 +125,13 @@
                 clearInterval(countdownInterval);
 
                 // Ambil foto saat hitungan mencapai 0
-                takePhotoWithCapture();
+                takePhotoWithCapture(e);
                 console.log(currentPhotoIndex);
 
                 // Jika masih ada foto yang perlu diambil, lanjutkan
                 setTimeout(() => {
                     if (currentPhotoIndex < 3) {
-                        runSquencePhoto();
+                        runSquencePhoto(e);
                     } else {
                         document.getElementById('nextStep').classList.remove('hidden');
                         document.getElementById('takePhotoButton').setAttribute('disabled', 'true');
@@ -154,7 +156,8 @@
         ctx.restore();
     }
 
-    function downloadImage() {
+    function downloadImage(e) {
+        e.preventDefault();
         const element = document.getElementById('framePhotobooth');
 
         html2canvas(element).then(function(canvas) {
