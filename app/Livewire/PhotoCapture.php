@@ -17,36 +17,34 @@ class PhotoCapture extends Component
         $this->photo = [];
         $this->id = 0;
         // Bersihkan session lama jika ada
-        $this->cleanupOldSessions();
+        // $this->cleanupOldSessions();
     }
 
-    private function cleanupOldSessions()
-    {
-        // Hapus semua session key yang mengandung 'photo_'
-        $keys = collect(session()->all())->keys()
-            ->filter(function($key) {
-                return strpos($key, 'photo_') === 0;
-            });
+    // private function cleanupOldSessions()
+    // {
+    //     // Hapus semua session key yang mengandung 'photo_'
+    //     $keys = collect(session()->all())->keys()
+    //         ->filter(function($key) {
+    //             return strpos($key, 'photo_') === 0;
+    //         });
 
-        foreach($keys as $key) {
-            session()->forget($key);
-        }
-    }
+    //     foreach($keys as $key) {
+    //         session()->forget($key);
+    //     }
+    // }
 
-    public function dehydrate()
-    {
-        // Ini akan dipanggil sebelum komponen di-render
-        // dan dapat memastikan session konsisten
-        session()->save();
-    }
+    // public function dehydrate()
+    // {
+    //     // Ini akan dipanggil sebelum komponen di-render
+    //     // dan dapat memastikan session konsisten
+    //     session()->save();
+    // }
 
     #[lazy]
     public function addPhoto($frame){
-        // Simpan ke session dengan timestamp
         $timestamp = time();
-        session()->put("photo_{$this->id}_{$timestamp}", $frame);
+        // session()->put("photo_{$this->id}_{$timestamp}", $frame);
 
-        // Simpan referensi ke session key
         $this->photo[$this->id] = "photo_{$this->id}_{$timestamp}";
         $this->id++;
     }

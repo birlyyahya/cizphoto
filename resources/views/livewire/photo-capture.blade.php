@@ -50,7 +50,7 @@
                             <div class="relative">
                                 <canvas id="takePhotoCanvas{{ $key }}" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
-                                    <img src="{{ session($value) }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy">
+                                    <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy">
                                 </div>
                             </div>
                             @endforeach
