@@ -10,6 +10,7 @@ class PhotoCapture extends Component
 
     public $photo = [];
     public $id = 0;
+    public $count = 3;
 
     public function mount()
     {
@@ -18,6 +19,10 @@ class PhotoCapture extends Component
         $this->id = 0;
         // Bersihkan session lama jika ada
         // $this->cleanupOldSessions();
+    }
+
+    public function updatedCount(){
+
     }
 
     // private function cleanupOldSessions()

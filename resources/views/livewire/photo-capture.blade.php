@@ -1,5 +1,5 @@
 <div>
-    <div class="flex flex-col md:flex-row gap-6     ">
+    <div class="flex flex-col md:flex-row gap-6">
         <!-- Camera Preview Section -->
         <div class="flex-1 justify-center">
             <div class="relative justify-items-center">
@@ -16,7 +16,16 @@
                 <flux:button icon="camera" id="takePhotoButton" variant="primary" onclick="runSquencePhoto(event)">
                     Take a Cizz!
                 </flux:button>
-
+                <flux:button icon="camera" style="display:none;" id="resetButton" onclick="resetPhotos(event)">
+                    Retake
+                </flux:button>
+                <div class="flex">
+                    <flux:select id="countSelector" placeholder="">
+                        <flux:select.option value="3">3</flux:select.option>
+                        <flux:select.option value="5">5</flux:select.option>
+                        <flux:select.option value="10">10</flux:select.option>
+                    </flux:select>
+                </div>
             </div>
         </div>
 
@@ -52,19 +61,19 @@
                         <div id="framePhotobooth" class="space-y-2 flex flex-col w-full md:w-fit p-5 m-auto md:justify-normal  items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
                             {{-- @foreach ($this->photo as $key => $value ) --}}
                             <div class="relative">
-                                <canvas id="previewDownload1" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                                <canvas id="previewDownload1" class="w-48 h-36 object-cover bg-gray-100  shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
                                     {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
                                 </div>
                             </div>
                             <div class="relative">
-                                <canvas id="previewDownload2" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                                <canvas id="previewDownload2" class="w-48 h-36 object-cover bg-gray-100  shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
                                     {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
                                 </div>
                             </div>
                             <div class="relative">
-                                <canvas id="previewDownload3" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                                <canvas id="previewDownload3" class="w-48 h-36 object-cover bg-gray-100  shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
                                     {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
                                 </div>
@@ -86,7 +95,10 @@
     let imageCapture = null;
     let mediaStream = null;
     let currentPhotoIndex = 1;
-
+    let countDown = 3;
+    document.getElementById('countSelector').addEventListener('change', function(event) {
+        countDown = parseInt(event.target.value); // Ubah nilai count
+    });
     // Inisialisasi kamera saat halaman dimuat
     document.addEventListener('DOMContentLoaded', initCamera);
 
@@ -175,6 +187,7 @@
     function runSquencePhoto(e) {
         if (e) e.preventDefault();
         const takePhotoButton = document.getElementById('takePhotoButton');
+        document.getElementById('countSelector').setAttribute('disabled', true);
         const timerDisplay = document.getElementById('timerDisplay');
         const countDisplay = document.getElementById('countDisplay');
         const timerOverlay = document.getElementById('timerOverlay');
@@ -194,8 +207,7 @@
             return;
         }
 
-        let count = 3; // Hitungan mundur
-
+        let count = countDown;
         timerDisplay.textContent = count;
         takePhotoButton.textContent = 'Get Ready!';
         countDisplay.classList.remove('hidden');
@@ -219,9 +231,11 @@
                         runSquencePhoto(e);
                     } else {
                         document.getElementById('nextStep').classList.remove('hidden');
+                        takePhotoButton.style.display = 'none';
+                        document.getElementById('resetButton').style.display = 'flex';
                         takePhotoButton.setAttribute('disabled', 'true');
                         timerOverlay.classList.add('hidden');
-                        takePhotoButton.textContent = 'Done';
+                        takePhotoButton.textContent = 'Retake';
                     }
                 }, 500);
             }
@@ -273,6 +287,56 @@
         }).catch(function(error) {
             console.error('Error capturing image:', error);
         });
+    }
+
+    function resetPhotos(e) {
+        if (e) e.preventDefault();
+
+        // Reset counter dan status
+        currentPhotoIndex = 1;
+
+        // Reset tombol dan elemen UI
+        const takePhotoButton = document.getElementById('takePhotoButton');
+        if (takePhotoButton) {
+            takePhotoButton.removeAttribute('disabled');
+            takePhotoButton.textContent = 'Take Photo';
+        }
+        takePhotoButton.style.display = 'flex';
+        document.getElementById('resetButton').style.display = 'none';
+        document.getElementById('countSelector').removeAttribute('disabled');
+        // Sembunyikan tombol next step
+        const nextStep = document.getElementById('nextStep');
+        if (nextStep) {
+            nextStep.classList.add('hidden');
+        }
+
+        // Reset semua canvas
+        for (let i = 0; i <= 3; i++) {
+            const canvas = document.getElementById('takePhotoCanvas' + i);
+            const preview = document.getElementById('previewDownload' + i);
+
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+            if (preview) {
+                const cty = preview.getContext('2d');
+                cty.clearRect(0, 0, preview.width, preview.height);
+            }
+        }
+
+        // Reset overlay dan timer
+        const timerOverlay = document.getElementById('timerOverlay');
+        const countDisplay = document.getElementById('countDisplay');
+
+        if (timerOverlay) timerOverlay.classList.add('hidden');
+        if (countDisplay) countDisplay.classList.add('hidden');
+
+        // Opsional: reinisialisasi kamera jika diperlukan
+        // initCamera();
+
+        console.log('Photos reset successfully');
     }
 
 </script>
