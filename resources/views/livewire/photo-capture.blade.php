@@ -10,7 +10,7 @@
                 </div>
             </div>
             <div class="mt-4 flex justify-center space-x-4">
-                <flux:button icon="camera" id="takePhotoButton" variant="primary" onclick="runSquencePhoto(event)">
+                <flux:button icon="camera" id="takePhotoButton" variant="primary" onclick="takePhotoWithCapture(event)">
                     Take a Cizz!
                 </flux:button>
 
@@ -25,7 +25,7 @@
                 <canvas id="takePhotoCanvas3" wire:ignore class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
             </div>
             <div class="mt-4 text-center">
-                <flux:modal.trigger name="next" class="hidden" id="nextStep">
+                <flux:modal.trigger name="next" class="" id="nextStep">
                     <flux:button variant="primary">Next</flux:button>
                 </flux:modal.trigger>
 
@@ -46,14 +46,26 @@
                             </div>
                         </div>
                         <div id="framePhotobooth" class="space-y-2 flex flex-col w-fit p-5 m-auto items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
-                            @foreach ($this->photo as $key => $value )
+                            {{-- @foreach ($this->photo as $key => $value ) --}}
                             <div class="relative">
-                                <canvas id="takePhotoCanvas{{ $key }}" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                                <canvas id="previewDownload1" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
-                                    <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy">
+                                    {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
                                 </div>
                             </div>
-                            @endforeach
+                            <div class="relative">
+                                <canvas id="previewDownload2" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                                <div class="absolute inset-0 flex">
+                                    {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <canvas id="previewDownload3" class="w-48 h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                                <div class="absolute inset-0 flex">
+                                    {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
+                                </div>
+                            </div>
+                            {{-- @endforeach --}}
                             <h1 class="text-center text-xs" :class="frameColor === '#ffffff' ? 'text-black' : 'text-white'" :style="{ backgroundColor: frameColor }">
                                 🎀 Cizzphoto 🎀
                             </h1>
@@ -93,8 +105,9 @@
         imageCapture.grabFrame()
             .then(imageBitmap => {
                 const canvas = document.getElementById('takePhotoCanvas' + currentPhotoIndex);
-                drawMirroredCanvas(canvas, imageBitmap);
-                @this.call('addPhoto', canvas.toDataURL('image/png'));
+                const preview = document.getElementById('previewDownload' + currentPhotoIndex);
+                drawMirroredCanvas(canvas, imageBitmap, preview);
+                // @this.call('addPhoto', canvas.toDataURL('image/png'));
             })
             .catch(error => console.error("Error taking photo:", error));
 
@@ -142,8 +155,10 @@
         }, 1000);
     }
 
-    function drawMirroredCanvas(canvas, img) {
+    function drawMirroredCanvas(canvas, img, preview) {
         const ctx = canvas.getContext('2d');
+        const cty = preview.getContext('2d');
+
         canvas.width = img.width;
         canvas.height = img.height;
 
@@ -154,6 +169,17 @@
 
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         ctx.restore();
+
+        preview.width = img.width;
+        preview.height = img.height;
+
+
+        cty.save();
+        cty.translate(canvas.width, 0);
+        cty.scale(-1, 1);
+
+        cty.drawImage(img, 0, 0, preview.width, preview.height);
+        cty.restore();
     }
 
     function downloadImage(e) {

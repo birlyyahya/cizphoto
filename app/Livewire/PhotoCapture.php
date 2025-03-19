@@ -45,7 +45,7 @@ class PhotoCapture extends Component
         $timestamp = time();
         // session()->put("photo_{$this->id}_{$timestamp}", $frame);
 
-        $this->photo[$this->id] = "photo_{$this->id}_{$timestamp}";
+        $this->photo[$this->id] = $frame;
         $this->id++;
     }
 
