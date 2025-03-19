@@ -85,49 +85,112 @@
 <script>
     let imageCapture = null;
     let mediaStream = null;
-    let currentPhotoIndex = 0;
+    let currentPhotoIndex = 1;
 
+    // Inisialisasi kamera saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', initCamera);
 
+    function initCamera() {
+        navigator.mediaDevices.getUserMedia({
+                video: true
+            })
+            .then(stream => {
+                mediaStream = stream;
+                const videoElement = document.getElementById('video');
+                videoElement.srcObject = stream;
 
-    navigator.mediaDevices.getUserMedia({
-            video: true
-        })
-        .then(stream => {
-            mediaStream = stream;
-            const videoElement = document.getElementById('video');
-            videoElement.srcObject = stream;
+                const track = stream.getVideoTracks()[0];
 
-            const track = stream.getVideoTracks()[0];
-            imageCapture = new ImageCapture(track);
-        })
-        .catch(error => console.error("Error accessing camera:", error));
+                // Check if ImageCapture is supported
+                if (typeof ImageCapture !== 'undefined') {
+                    // Chrome and supported browsers
+                    imageCapture = new ImageCapture(track);
+                }
+                // Untuk Safari, kita akan menggunakan videoElement langsung
+            })
+            .catch(error => console.error("Error accessing camera:", error));
+    }
 
     function takePhotoWithCapture(e) {
-        e.preventDefault();
-        if (!imageCapture) return console.error("Camera not initialized");
+        if (e) e.preventDefault();
 
-        imageCapture.grabFrame()
-            .then(imageBitmap => {
-                const canvas = document.getElementById('takePhotoCanvas' + currentPhotoIndex);
-                const preview = document.getElementById('previewDownload' + currentPhotoIndex);
-                drawMirroredCanvas(canvas, imageBitmap, preview);
-                // @this.call('addPhoto', canvas.toDataURL('image/png'));
-            })
-            .catch(error => console.error("Error taking photo:", error));
+        const videoElement = document.getElementById('video');
+        const canvas = document.getElementById('takePhotoCanvas' + currentPhotoIndex);
+        const preview = document.getElementById('previewDownload' + currentPhotoIndex);
+
+        if (typeof ImageCapture !== 'undefined' && imageCapture) {
+            // Untuk Chrome dan browser yang mendukung ImageCapture
+            imageCapture.grabFrame()
+                .then(imageBitmap => {
+                    drawMirroredCanvas(canvas, imageBitmap, preview);
+                })
+                .catch(error => {
+                    console.error("Error taking photo with ImageCapture:", error);
+                    // Fallback ke metode canvas jika ImageCapture gagal
+                    captureFromVideo(videoElement, canvas, preview);
+                });
+        } else {
+            // Fallback untuk Safari - gunakan canvas untuk menangkap dari video
+            captureFromVideo(videoElement, canvas, preview);
+        }
+
         setTimeout(() => {
-            countDisplay.classList.add('hidden');
-            timerOverlay.classList.add('hidden');
+            if (countDisplay) countDisplay.classList.add('hidden');
+            if (timerOverlay) timerOverlay.classList.add('hidden');
         }, 100);
+
         currentPhotoIndex++;
     }
 
+    function captureFromVideo(videoElement, canvas, preview) {
+        if (!videoElement || !canvas) return console.error("Video or canvas element not found");
+
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions to match video
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+
+        // Draw mirrored video frame on canvas
+        ctx.save();
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        // Do the same for preview if it exists
+        if (preview) {
+            const cty = preview.getContext('2d');
+            preview.width = videoElement.videoWidth;
+            preview.height = videoElement.videoHeight;
+
+            cty.save();
+            cty.translate(preview.width, 0);
+            cty.scale(-1, 1);
+            cty.drawImage(videoElement, 0, 0, preview.width, preview.height);
+            cty.restore();
+        }
+    }
+
     function runSquencePhoto(e) {
-        e.preventDefault();
-        document.getElementById('takePhotoButton').setAttribute('disabled', 'true');
-        if (!imageCapture) return console.error("Camera not initialized");
+        if (e) e.preventDefault();
+        const takePhotoButton = document.getElementById('takePhotoButton');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const countDisplay = document.getElementById('countDisplay');
+        const timerOverlay = document.getElementById('timerOverlay');
+
+        takePhotoButton.setAttribute('disabled', 'true');
+
+        // Periksa ketersediaan kamera
+        if (!mediaStream) {
+            console.error("Camera not initialized");
+            initCamera(); // Coba inisialisasi ulang kamera
+            setTimeout(() => runSquencePhoto(e), 1000); // Coba ulang sequence setelah 1 detik
+            return;
+        }
 
         // Jika sudah mencapai batas foto, langsung keluar
-        if (currentPhotoIndex >= 3) {
+        if (currentPhotoIndex > 3) {
             return;
         }
 
@@ -152,11 +215,11 @@
 
                 // Jika masih ada foto yang perlu diambil, lanjutkan
                 setTimeout(() => {
-                    if (currentPhotoIndex < 3) {
+                    if (currentPhotoIndex <= 3) {
                         runSquencePhoto(e);
                     } else {
                         document.getElementById('nextStep').classList.remove('hidden');
-                        document.getElementById('takePhotoButton').setAttribute('disabled', 'true');
+                        takePhotoButton.setAttribute('disabled', 'true');
                         timerOverlay.classList.add('hidden');
                         takePhotoButton.textContent = 'Done';
                     }
@@ -166,34 +229,34 @@
     }
 
     function drawMirroredCanvas(canvas, img, preview) {
+        if (!canvas || !img) return console.error("Canvas or image not available");
+
         const ctx = canvas.getContext('2d');
-        const cty = preview.getContext('2d');
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-
+        canvas.width = img.width || img.videoWidth || 640;
+        canvas.height = img.height || img.videoHeight || 480;
 
         ctx.save();
         ctx.translate(canvas.width, 0);
         ctx.scale(-1, 1);
-
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         ctx.restore();
 
-        preview.width = img.width;
-        preview.height = img.height;
+        // Handle preview canvas if provided
+        if (preview) {
+            const cty = preview.getContext('2d');
+            preview.width = canvas.width;
+            preview.height = canvas.height;
 
-
-        cty.save();
-        cty.translate(canvas.width, 0);
-        cty.scale(-1, 1);
-
-        cty.drawImage(img, 0, 0, preview.width, preview.height);
-        cty.restore();
+            cty.save();
+            cty.translate(preview.width, 0);
+            cty.scale(-1, 1);
+            cty.drawImage(img, 0, 0, preview.width, preview.height);
+            cty.restore();
+        }
     }
 
     function downloadImage(e) {
-        e.preventDefault();
+        if (e) e.preventDefault();
         const element = document.getElementById('framePhotobooth');
 
         html2canvas(element).then(function(canvas) {
@@ -205,11 +268,8 @@
             downloadLink.download = 'Cizzphoto.png';
 
             document.body.appendChild(downloadLink);
-
             downloadLink.click();
-
             document.body.removeChild(downloadLink);
-
         }).catch(function(error) {
             console.error('Error capturing image:', error);
         });
