@@ -30,7 +30,7 @@ Route::get('/photo', function () {
 // });
 
 Route::fallback(function () {
-    return response()->view('errors.404', [], 404);
+    abort(404);
 });
 
 require __DIR__.'/auth.php';

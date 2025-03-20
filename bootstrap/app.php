@@ -13,10 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            '2fa' => \PragmaRX\Google2FALaravel\Middleware::class,
+            // '2fa' => \PragmaRX\Google2FALaravel\Middleware::class,
             // 'PDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->stopIgnoring(HttpException::class);
     })->create();
