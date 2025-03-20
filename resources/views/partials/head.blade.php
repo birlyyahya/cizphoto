@@ -5,7 +5,7 @@
 
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-<link rel="shortcut icon" href="{{ asset('storage/background/logo3.png') }}" type="image/x-icon">
+<link rel="shortcut icon" href="{{ asset('image/logo3.png') }}" type="image/x-icon">
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 {{-- @fluxAppearance --}}
