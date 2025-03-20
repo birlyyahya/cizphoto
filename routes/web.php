@@ -19,6 +19,10 @@ Route::get('/photo', function () {
     return view('photo');
 })->name('photo');
 
+Route::get('/spesial-photo', function () {
+    return view('spesial-photo');
+})->name('spesial');
+
 // Route::view('dashboard', 'dashboard')
 //     ->middleware(['auth', 'verified'])
 //     ->name('dashboard');
