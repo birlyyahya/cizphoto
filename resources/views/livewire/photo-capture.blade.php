@@ -98,65 +98,99 @@
     document.getElementById('countSelector').addEventListener('change', function(event) {
         countDown = parseInt(event.target.value); // Ubah nilai count
     });
-    // Inisialisasi kamera saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', initCamera);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize camera
+        initCamera();
+
+        // Additional initialization for iPhone
+        if (/iPhone/.test(navigator.userAgent) && !window.MSStream) {
+            console.log("iPhone detected, applying special handling");
+
+            // Force showing the video element
+            const videoElement = document.getElementById('video');
+            videoElement.style.display = 'block';
+            videoElement.style.width = '100%';
+            videoElement.style.height = 'auto';
+
+            // Ensure the video element has correct attributes
+            videoElement.setAttribute('playsinline', '');
+            videoElement.setAttribute('autoplay', '');
+            videoElement.setAttribute('muted', '');
+        }
+    });
 
     function initCamera() {
-        // Check if it's an iOS device
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        // Check if it's specifically an iPhone
+        const isIPhone = /iPhone/.test(navigator.userAgent) && !window.MSStream;
 
-        // Set constraints with higher resolution options for iOS
+        // Set constraints specifically for iPhone
         const constraints = {
-            video: isIOS ? {
+            video: {
                 facingMode: "user"
-                , width: {
+                , width: isIPhone ? {
+                    ideal: 1280
+                    , min: 640
+                } : {
                     ideal: 1280
                 }
-                , height: {
+                , height: isIPhone ? {
+                    ideal: 720
+                    , min: 480
+                } : {
                     ideal: 720
                 }
-            } : {
-                facingMode: "user"
             }
         };
+
+        // Clear any existing stream
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+        }
 
         navigator.mediaDevices.getUserMedia(constraints)
             .then(stream => {
                 mediaStream = stream;
                 const videoElement = document.getElementById('video');
+
+                // Essential for iPhone
+                videoElement.setAttribute('playsinline', '');
+                videoElement.setAttribute('autoplay', '');
+                videoElement.setAttribute('muted', '');
+
+                // Set the stream as source
                 videoElement.srcObject = stream;
 
-                // Apply specific settings for iOS
-                if (isIOS) {
-                    videoElement.setAttribute('playsinline', true);
-                    videoElement.setAttribute('autoplay', true);
-                }
+                // Make sure video is playing
+                videoElement.play().catch(e => console.error("Error playing video:", e));
 
                 const track = stream.getVideoTracks()[0];
 
-                // Try to set advanced constraints if available
-                try {
-                    const capabilities = track.getCapabilities();
-                    if (capabilities && capabilities.width && capabilities.height) {
-                        track.applyConstraints({
-                            width: {
-                                ideal: capabilities.width.max
-                            }
-                            , height: {
-                                ideal: capabilities.height.max
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.warn("Could not apply advanced constraints:", e);
+                // For iPhone, make sure we're getting the correct resolution
+                if (isIPhone) {
+                    console.log("iPhone detected, applying special camera handling");
+
+                    // Force a refresh of the video element after a short delay
+                    setTimeout(() => {
+                        videoElement.style.display = 'none';
+                        setTimeout(() => {
+                            videoElement.style.display = 'block';
+                        }, 50);
+                    }, 500);
                 }
 
                 // Check if ImageCapture is supported
                 if (typeof ImageCapture !== 'undefined') {
                     imageCapture = new ImageCapture(track);
+                    console.log("ImageCapture supported");
+                } else {
+                    console.log("ImageCapture not supported, using fallback");
                 }
             })
-            .catch(error => console.error("Error accessing camera:", error));
+            .catch(error => {
+                console.error("Error accessing camera:", error);
+                alert("Could not access camera. Please ensure you've granted camera permissions.");
+            });
     }
 
     function takePhotoWithCapture(e) {
@@ -166,46 +200,73 @@
         const canvas = document.getElementById('takePhotoCanvas' + currentPhotoIndex);
         const preview = document.getElementById('previewDownload' + currentPhotoIndex);
 
-        if (typeof ImageCapture !== 'undefined' && imageCapture) {
-            // Untuk Chrome dan browser yang mendukung ImageCapture
+        console.log("Taking photo for index:", currentPhotoIndex);
+
+        // Check if video is ready
+        if (!videoElement.videoWidth || !videoElement.videoHeight) {
+            console.error("Video dimensions not available yet");
+            // Try again after a short delay
+            setTimeout(() => takePhotoWithCapture(e), 300);
+            return;
+        }
+
+        // For iPhone, always use the canvas method
+        const isIPhone = /iPhone/.test(navigator.userAgent) && !window.MSStream;
+
+        if (isIPhone || !imageCapture) {
+            console.log("Using direct canvas capture method");
+            captureFromVideo(videoElement, canvas, preview);
+        } else {
+            // For other devices, try ImageCapture first
             imageCapture.grabFrame()
                 .then(imageBitmap => {
+                    console.log("ImageCapture successful");
                     drawMirroredCanvas(canvas, imageBitmap, preview);
                 })
                 .catch(error => {
-                    console.error("Error taking photo with ImageCapture:", error);
-                    // Fallback ke metode canvas jika ImageCapture gagal
+                    console.error("Error with ImageCapture:", error);
                     captureFromVideo(videoElement, canvas, preview);
                 });
-        } else {
-            // Fallback untuk Safari - gunakan canvas untuk menangkap dari video
-            captureFromVideo(videoElement, canvas, preview);
         }
 
-        setTimeout(() => {
-            if (countDisplay) countDisplay.classList.add('hidden');
-            if (timerOverlay) timerOverlay.classList.add('hidden');
-        }, 100);
+        // Hide countdown overlay
+        const countDisplay = document.getElementById('countDisplay');
+        const timerOverlay = document.getElementById('timerOverlay');
+        if (countDisplay) countDisplay.classList.add('hidden');
+        if (timerOverlay) timerOverlay.classList.add('hidden');
 
+        // Log success
+        console.log("Photo taken for index:", currentPhotoIndex);
+
+        // Increment photo index
         currentPhotoIndex++;
     }
 
     function captureFromVideo(videoElement, canvas, preview) {
-        if (!videoElement || !canvas) return console.error("Video or canvas element not found");
+        if (!videoElement || !canvas) {
+            console.error("Video or canvas element not found");
+            return;
+        }
 
         const ctx = canvas.getContext('2d');
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
         // Set canvas dimensions to match video
         canvas.width = videoElement.videoWidth;
         canvas.height = videoElement.videoHeight;
 
-        // For iOS, we need to handle mirroring differently
-        if (isIOS) {
-            // On iOS, we don't mirror again if the stream is already mirrored
+        // Check if it's an iPhone
+        const isIPhone = /iPhone/.test(navigator.userAgent) && !window.MSStream;
+
+        if (isIPhone) {
+            // For iPhone: We need to mirror the image because the default stream is NOT mirrored
+            // (contrary to what happens in other browsers)
+            ctx.save();
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
             ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            ctx.restore();
         } else {
-            // For other browsers, apply mirroring as before
+            // For non-iPhone browsers: Apply the mirroring you already had
             ctx.save();
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
@@ -213,15 +274,21 @@
             ctx.restore();
         }
 
-        // Handle preview with the same logic
+        // Same handling for preview canvas
         if (preview) {
             const cty = preview.getContext('2d');
-            preview.width = canvas.width;
-            preview.height = canvas.height;
+            preview.width = videoElement.videoWidth;
+            preview.height = videoElement.videoHeight;
 
-            if (isIOS) {
+            if (isIPhone) {
+                // Mirror for iPhone too
+                cty.save();
+                cty.translate(preview.width, 0);
+                cty.scale(-1, 1);
                 cty.drawImage(videoElement, 0, 0, preview.width, preview.height);
+                cty.restore();
             } else {
+                // Mirror for other browsers as before
                 cty.save();
                 cty.translate(preview.width, 0);
                 cty.scale(-1, 1);
