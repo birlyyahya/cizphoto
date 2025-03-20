@@ -5,11 +5,11 @@
             <div class="text-center text-5xl md:text-7xl italic">cizzphoto</div>
             <flux:subheading size="xl" class="italic">2025</flux:subheading>
         </div>
-        <flux:subheading size="sm" class="w-full m-auto">Ini websitenya cizburgerzz selamat fotoooo yangg cantikssssss
-        </flux:subheading>
-        <div class="m-10">
-            <flux:button variant="primary" href="/photo">Let’s Go!</flux:button>
-        </div>
+        <p size="sm" class="text-sm mb-10 w-full m-auto text-gray-700">Ini websitenya cizburgerzz selamat fotoooo yangg cantikssssss
+        </p>
+        {{-- <div class="m-10"> --}}
+            {{-- <flux:button variant="primary" href="/photo">Let’s Go!</flux:button> --}}
+        {{-- </div> --}}
         <flux:modal.trigger name="delete-profile">
             <flux:button variant="primary">Let's Go!</flux:button>
         </flux:modal.trigger>
@@ -17,17 +17,16 @@
         <flux:modal name="delete-profile" class="min-w-[22rem]">
             <div class="space-y-6">
                 <div>
-                    <flux:heading size="lg">Info</flux:heading>
+                    <flux:heading size="lg">👋 Pakai iPad atau Laptop Yuk!</flux:heading>
 
                     <flux:subheading>
-                        <p>You're about to delete this project.</p>
-                        <p>This action cannot be reversed.</p>
+                        <p>Website ini lebih seru kalau dibuka di iPad atau laptop. Tampilan lebih jelas, fitur lebih maksimal, dan pengalaman lebih nyaman!</p>
                     </flux:subheading>
                 </div>
 
-                <div class="flex gap-2">
+                <div class="flex flex-col justify-center items-center gap-2">
                     <flux:spacer />
-                    <flux:button type="submit" variant="danger">Delete project</flux:button>
+                    <flux:button variant="primary" href="/photo">🚀 Ayo Mulai!</flux:button>
                 </div>
             </div>
         </flux:modal>

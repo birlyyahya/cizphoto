@@ -11,6 +11,10 @@ Route::get('/about', function () {
     return view('about');
 })->name('about');
 
+Route::get('/privacy-policy', function () {
+    return view('privacy');
+})->name('privacy');
+
 Route::get('/photo', function () {
     return view('photo');
 })->name('photo');

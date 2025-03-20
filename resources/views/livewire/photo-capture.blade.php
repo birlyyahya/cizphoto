@@ -76,7 +76,7 @@
                             </div>
                             {{-- @endforeach --}}
                             <h1 class="text-center text-xs py-3" :class="frameColor === '#ffffff' ? 'text-black' : 'text-white'" :style="{ backgroundColor: frameColor }">
-                                🎀 Cizzphoto 🎀
+                                CIZZPHOTO
                             </h1>
                         </div>
                     </div>
