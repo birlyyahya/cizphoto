@@ -3,7 +3,7 @@
         <div class="flex justify-center items-center lg:gap-8 gap-3">
             <flux:subheading size="xl" class="italic">est</flux:subheading>
             {{-- <div class="text-center text-5xl md:text-7xl italic">cizzphoto</div> --}}
-            <img src="{{ asset('storage/background/logoCizz.png') }}" class="min-w-[250px] w-1/3 md:w-1/3" alt="" srcset="">
+            <img src="{{ asset('Image/logoCizz.png') }}" class="min-w-[250px] w-1/3 md:w-1/3" alt="" srcset="">
             <flux:subheading size="xl" class="italic md:-left-10 -left-5 relative">2025</flux:subheading>
         </div>
         <p size="sm" class="text-xs md:text-sm mb-10 w-2/3 md:w-full m-auto text-gray-700">Ini websitenya cizburgerzz selamat fotoooo yangg cantikssssss
