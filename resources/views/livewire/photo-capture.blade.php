@@ -47,7 +47,7 @@
                         <div class="frame mb-2 flex flex-col order-last md:order-first gap-5">
                             <label class="color-picker flex items-center border bg-white rounded-lg px-2 py-1 border-slate-300 gap-3">
                                 <input type="color" style="border-radius: 100%;" x-model="frameColor" :value="frameColor" class="h-8 w-8 block cursor-pointer disabled:opacity-50 disabled:pointer-events-none" id="colorinput" title="Choose your color">
-                                <label for="colorinput" class="">Pilih Warna</label>
+                                <label for="colorinput" class="">Custom Warna</label>
                             </label>
                             <div class="template-color space-y-2 gap-2 mt-2">
                                 <x-partials.radioColor>
