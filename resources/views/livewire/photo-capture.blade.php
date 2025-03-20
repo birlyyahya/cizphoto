@@ -57,7 +57,7 @@
                                 <flux:button class="self-end">Send Email</flux:button>
                             </div>
                         </div>
-                        <div id="framePhotobooth" class="space-y-2 flex flex-col w-full md:w-fit p-5 m-auto md:justify-normal  items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
+                        <div id="framePhotobooth" class="space-y-2 flex flex-col w-full md:w-fit p-5 mx-auto justify-self-center justify-center md:justify-normal  items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
                             {{-- @foreach ($this->photo as $key => $value ) --}}
                             <div class="relative">
                                 <canvas id="previewDownload1" class="w-48 h-36 object-cover bg-gray-100  shadow-inner"></canvas>
