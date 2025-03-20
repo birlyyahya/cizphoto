@@ -5,11 +5,11 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Cizzphoto</h2>
                 <p class="text-gray-600">You have 3 seconds for each shot – no retakes!</p>
             </div>
-           <livewire:photo-capture>
+            <livewire:photo-capture>
         </div>
-        <br>
-        <br>
-        <br>
-        <br>
     </div>
+    <br>
+    <br>
+    <br>
+    <br>
 </x-layouts.guest>

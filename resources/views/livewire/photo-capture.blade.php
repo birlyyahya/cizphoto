@@ -4,7 +4,6 @@
         <div class="flex-1 justify-center">
             <div class="relative justify-items-center">
                 <video id="video" autoplay class="w-[300px] h-[220px] sm:w-[480px] sm:h-[360px] md:w-[640px] md:h-[480px] object-cover bg-gray-100 rounded-lg shadow-inner -scale-x-100"></video>
-
                 <div id="countDisplay" class="absolute inset-0 flex items-center justify-center hidden">
                     <div class="text-white text-9xl font-bold" id="timerDisplay">3</div>
                 </div>
@@ -19,10 +18,11 @@
                     Retake
                 </flux:button>
                 <div class="flex">
-                    <flux:select id="countSelector" placeholder="">
+                    <flux:select id="countSelector" placeholder="" class="field-sizing-content">
                         <flux:select.option value="3">3</flux:select.option>
                         <flux:select.option value="5">5</flux:select.option>
                         <flux:select.option value="10">10</flux:select.option>
+                        <flux:select.option value="100">100 (khusus buat gek dwi)</flux:select.option>
                     </flux:select>
                 </div>
             </div>
@@ -41,8 +41,8 @@
                     <flux:button variant="primary">Next</flux:button>
                 </flux:modal.trigger>
 
-                <flux:modal name="next" class="w-3/4 h-4/5 md:w-full max-w-2xl max-h-screen bg-zinc-200 gap-5">
-                    <div x-data="{ frameColor: '#000' }" class="grid grid-cols-1 md:grid-cols-2 h-full gap-5">
+                <flux:modal name="next" class="w-3/4 h-4/5 md:w-full max-w-2xl max-h-screen md:h-fit bg-zinc-200 gap-5">
+                    <div x-data="{ frameColor: '#000' }" class="grid grid-cols-1 md:grid-cols-2 h-fit gap-5">
                         <div class="frame mb-2 flex flex-col order-last md:order-first gap-5">
                             <label class="color-picker flex items-center border bg-white rounded-lg px-2 py-1 border-slate-300 gap-3">
                                 <input type="color" style="border-radius: 100%;" x-model="frameColor" :value="frameColor" class="h-8 w-8 block cursor-pointer disabled:opacity-50 disabled:pointer-events-none" id="colorinput" title="Choose your color">
@@ -57,28 +57,25 @@
                                 <flux:button class="self-end">Send Email</flux:button>
                             </div>
                         </div>
-                        <div id="framePhotobooth" class="space-y-2 flex flex-col w-full md:w-fit p-5 mx-auto justify-self-center justify-center md:justify-normal  items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
+                        <div id="framePhotobooth" class="space-y-2 flex flex-col aspect-[9/16] w-64 md:w-80 h-fit  p-5 mx-auto justify-self-center justify-center md:justify-normal  items-center" :class="`bg-${frameColor}-500`" :style="{ backgroundColor: frameColor }">
                             {{-- @foreach ($this->photo as $key => $value ) --}}
-                            <div class="relative">
-                                <canvas id="previewDownload1" class="w-48 h-36 object-cover bg-gray-100  shadow-inner"></canvas>
+                            <div class="relative flex justify-center">
+                                <canvas id="previewDownload1" class="w-5/6 aspect-[4/3] object-cover bg-gray-100 shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
-                                    {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
                                 </div>
                             </div>
-                            <div class="relative">
-                                <canvas id="previewDownload2" class="w-48 h-36 object-cover bg-gray-100  shadow-inner"></canvas>
+                            <div class="relative flex justify-center">
+                                <canvas id="previewDownload2" class="w-5/6 aspect-[4/3] object-cover bg-gray-100  shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
-                                    {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
                                 </div>
                             </div>
-                            <div class="relative">
-                                <canvas id="previewDownload3" class="w-48 h-36 object-cover bg-gray-100  shadow-inner"></canvas>
+                            <div class="relative flex justify-center">
+                                <canvas id="previewDownload3" class="w-5/6 aspect-[4/3] object-cover bg-gray-100  shadow-inner"></canvas>
                                 <div class="absolute inset-0 flex">
-                                    {{-- <img src="{{ $value }}" class="w-48 h-36 object-cover shadow-inner" loading="lazy"> --}}
                                 </div>
                             </div>
                             {{-- @endforeach --}}
-                            <h1 class="text-center text-xs" :class="frameColor === '#ffffff' ? 'text-black' : 'text-white'" :style="{ backgroundColor: frameColor }">
+                            <h1 class="text-center text-xs py-3" :class="frameColor === '#ffffff' ? 'text-black' : 'text-white'" :style="{ backgroundColor: frameColor }">
                                 🎀 Cizzphoto 🎀
                             </h1>
                         </div>
