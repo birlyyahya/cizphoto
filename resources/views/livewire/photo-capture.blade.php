@@ -3,9 +3,8 @@
         <!-- Camera Preview Section -->
         <div class="flex-1 justify-center">
             <div class="relative justify-items-center">
-                <video id="video" autoplay class="w-[320px] h-[180px] md:w-[640px] md:h-[480px]
-                       object-cover bg-gray-100 rounded-lg shadow-inner -scale-x-100">
-                </video>
+                <video id="video" autoplay class="w-[300px] h-[220px] sm:w-[480px] sm:h-[360px] md:w-[640px] md:h-[480px] object-cover bg-gray-100 rounded-lg shadow-inner -scale-x-100"></video>
+
                 <div id="countDisplay" class="absolute inset-0 flex items-center justify-center hidden">
                     <div class="text-white text-9xl font-bold" id="timerDisplay">3</div>
                 </div>
@@ -103,22 +102,59 @@
     document.addEventListener('DOMContentLoaded', initCamera);
 
     function initCamera() {
-        navigator.mediaDevices.getUserMedia({
-                video: true
-            })
+        // Check if it's an iOS device
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        // Set constraints with higher resolution options for iOS
+        const constraints = {
+            video: isIOS ? {
+                facingMode: "user"
+                , width: {
+                    ideal: 1280
+                }
+                , height: {
+                    ideal: 720
+                }
+            } : {
+                facingMode: "user"
+            }
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
             .then(stream => {
                 mediaStream = stream;
                 const videoElement = document.getElementById('video');
                 videoElement.srcObject = stream;
 
+                // Apply specific settings for iOS
+                if (isIOS) {
+                    videoElement.setAttribute('playsinline', true);
+                    videoElement.setAttribute('autoplay', true);
+                }
+
                 const track = stream.getVideoTracks()[0];
+
+                // Try to set advanced constraints if available
+                try {
+                    const capabilities = track.getCapabilities();
+                    if (capabilities && capabilities.width && capabilities.height) {
+                        track.applyConstraints({
+                            width: {
+                                ideal: capabilities.width.max
+                            }
+                            , height: {
+                                ideal: capabilities.height.max
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.warn("Could not apply advanced constraints:", e);
+                }
 
                 // Check if ImageCapture is supported
                 if (typeof ImageCapture !== 'undefined') {
-                    // Chrome and supported browsers
                     imageCapture = new ImageCapture(track);
                 }
-                // Untuk Safari, kita akan menggunakan videoElement langsung
             })
             .catch(error => console.error("Error accessing camera:", error));
     }
@@ -158,29 +194,40 @@
         if (!videoElement || !canvas) return console.error("Video or canvas element not found");
 
         const ctx = canvas.getContext('2d');
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
         // Set canvas dimensions to match video
         canvas.width = videoElement.videoWidth;
         canvas.height = videoElement.videoHeight;
 
-        // Draw mirrored video frame on canvas
-        ctx.save();
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
+        // For iOS, we need to handle mirroring differently
+        if (isIOS) {
+            // On iOS, we don't mirror again if the stream is already mirrored
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        } else {
+            // For other browsers, apply mirroring as before
+            ctx.save();
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            ctx.restore();
+        }
 
-        // Do the same for preview if it exists
+        // Handle preview with the same logic
         if (preview) {
             const cty = preview.getContext('2d');
-            preview.width = videoElement.videoWidth;
-            preview.height = videoElement.videoHeight;
+            preview.width = canvas.width;
+            preview.height = canvas.height;
 
-            cty.save();
-            cty.translate(preview.width, 0);
-            cty.scale(-1, 1);
-            cty.drawImage(videoElement, 0, 0, preview.width, preview.height);
-            cty.restore();
+            if (isIOS) {
+                cty.drawImage(videoElement, 0, 0, preview.width, preview.height);
+            } else {
+                cty.save();
+                cty.translate(preview.width, 0);
+                cty.scale(-1, 1);
+                cty.drawImage(videoElement, 0, 0, preview.width, preview.height);
+                cty.restore();
+            }
         }
     }
 

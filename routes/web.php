@@ -15,8 +15,6 @@ Route::get('/photo', function () {
     return view('photo');
 })->name('photo');
 
-
-
 // Route::view('dashboard', 'dashboard')
 //     ->middleware(['auth', 'verified'])
 //     ->name('dashboard');
