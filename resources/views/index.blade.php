@@ -1,11 +1,12 @@
 <x-layouts.guest>
-    <div class="flex flex-col items-center w-full justify-center h-fit space-y-4 text-center z-20 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-        <div class="flex justify-center items-center gap-4 md:gap-8">
+    <div class="flex flex-col items-center w-full justify-center h-fit space-y-4 text-center z-20 absolute top-3/7 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
+        <div class="flex justify-center items-center lg:gap-8 gap-3">
             <flux:subheading size="xl" class="italic">est</flux:subheading>
-            <div class="text-center text-5xl md:text-7xl italic">cizzphoto</div>
-            <flux:subheading size="xl" class="italic">2025</flux:subheading>
+            {{-- <div class="text-center text-5xl md:text-7xl italic">cizzphoto</div> --}}
+            <img src="{{ asset('storage/background/logoCizz.png') }}" class="min-w-[250px] w-1/3 md:w-1/3" alt="" srcset="">
+            <flux:subheading size="xl" class="italic md:-left-10 -left-5 relative">2025</flux:subheading>
         </div>
-        <p size="sm" class="text-sm mb-10 w-2/3 md:w-full m-auto text-gray-700">Ini websitenya cizburgerzz selamat fotoooo yangg cantikssssss
+        <p size="sm" class="text-xs md:text-sm mb-10 w-2/3 md:w-full m-auto text-gray-700">Ini websitenya cizburgerzz selamat fotoooo yangg cantikssssss
         </p>
         <flux:modal.trigger name="delete-profile">
             <flux:button variant="primary">Let's Go!</flux:button>
