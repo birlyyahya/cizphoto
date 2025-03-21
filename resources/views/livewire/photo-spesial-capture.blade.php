@@ -130,9 +130,9 @@
             </div>
         </div>
     </div>
-    <img src="{{ asset('background/animasi-trompet.gif') }}" id="gif-animasi" alt="" class="fixed hidden bottom-5 left-0  -rotate-20">
-    <img src="{{ asset('background/animasi-trompet.gif') }}" id="gif-animasi" alt="" class="fixed hidden bottom-5 right-0 scale-x-[-1] rotate-20">
-    <img src="{{ asset('background/splash.gif') }}" alt="" id="gif-animasi" class="fixed hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2">
+    <img src="{{ asset('Image/animasi-trompet.gif') }}" id="gif-animasi" alt="" class="fixed hidden bottom-5 left-0  -rotate-20">
+    <img src="{{ asset('Image/animasi-trompet.gif') }}" id="gif-animasi" alt="" class="fixed hidden bottom-5 right-0 scale-x-[-1] rotate-20">
+    <img src="{{ asset('Image/splash.gif') }}" alt="" id="gif-animasi" class="fixed hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2">
 
 </div>
 @push('scripts')
