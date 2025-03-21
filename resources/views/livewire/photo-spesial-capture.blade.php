@@ -36,7 +36,7 @@
             x-transition:leave="transition transform duration-500 ease-in"
             x-transition:leave-start="scale-100 opacity-100"
             x-transition:leave-end="scale-50 opacity-0"
-            x-show='showCard' src="{{ asset('background/card.png') }}" class="w-1/2" alt="" class="absolute">
+            x-show='showCard' src="{{ asset('Image/card.png') }}" class="w-1/2" alt="" class="absolute">
                <!-- Tombol Keluar -->
                <button @click="card = false; showCard = false;" class="absolute top-2 right-2 text-white px-3 py-1 rounded-full transition">
                 X
@@ -70,7 +70,7 @@
                                 </x-partials.radioColor>
                             </div>
                             <div class="flex grow-1 gap-5 mt-5 p-10 md:m-0 md:p-0 md:justify-normal justify-center">
-                                <flux:button id="downloadPhoto" @click=" card = true; setTimeout(() => showCard = true, 500); $flux.modals().close()" variant="primary" class="self-end">Download
+                                <flux:button id="downloadPhoto" @click="downloadImage(event);card = true; setTimeout(() => showCard = true, 500); $flux.modals().close()" variant="primary" class="self-end">Download
                                     <flux:badge variant="pill" color="warning">1</flux:badge>
                                 </flux:button>
                                 <flux:button class="self-end">Send Email</flux:button>
