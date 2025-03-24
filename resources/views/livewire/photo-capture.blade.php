@@ -31,10 +31,21 @@
         <!-- Photo Result Section -->
         <div class="flex-0 justify-center">
             <div class="relative flex-row space-y-1 justify-items-center">
-                <canvas id="takePhotoCanvas1" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner">
-                </canvas>
-                <canvas id="takePhotoCanvas2" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
-                <canvas id="takePhotoCanvas3" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner"></canvas>
+                <div class="relative group">
+                    <x-icon.x-mark id="retakeButton" class="hidden bg-white transition-opacity duration-300 opacity-0 group-hover:opacity-100 absolute rounded-full p-1 right-1 top-1 shadow-md" @click="retakePhoto(1)">></x-icon.x-mark>
+                    <canvas id="takePhotoCanvas1" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner">
+                    </canvas>
+                </div>
+                <div class="relative group">
+                    <x-icon.x-mark id="retakeButton" class="hidden bg-white transition-opacity duration-300 opacity-0 group-hover:opacity-100 absolute rounded-full p-1 right-1 top-1 shadow-md" @click="retakePhoto(2)"></x-icon.x-mark>
+                    <canvas id="takePhotoCanvas2" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner">
+                    </canvas>
+                </div>
+                <div class="relative group">
+                    <x-icon.x-mark id="retakeButton" class="hidden bg-white transition-opacity duration-300 opacity-0 group-hover:opacity-100 absolute rounded-full p-1 right-1 top-1 shadow-md" @click="retakePhoto(3)">></x-icon.x-mark>
+                    <canvas id="takePhotoCanvas3" wire:ignore class="w-40 h-30 sm:w-48 sm:h-36 object-cover bg-gray-100 rounded-lg shadow-inner">
+                    </canvas>
+                </div>
             </div>
             <div class="mt-4 text-center">
                 <flux:modal.trigger name="next" class="hidden" id="nextStep">
@@ -190,8 +201,7 @@
             });
     }
 
-    function takePhotoWithCapture(e) {
-        if (e) e.preventDefault();
+    function takePhotoWithCapture() {
 
         const videoElement = document.getElementById('video');
         const canvas = document.getElementById('takePhotoCanvas' + currentPhotoIndex);
@@ -347,7 +357,62 @@
                         takePhotoButton.setAttribute('disabled', 'true');
                         timerOverlay.classList.add('hidden');
                         takePhotoButton.textContent = 'Retake';
+                        document.querySelectorAll('#retakeButton').forEach((item) => item.classList.remove('hidden'));
                     }
+                }, 500);
+            }
+        }, 1000);
+    }
+
+    function runSquenceRetakePhoto() {
+        const takePhotoButton = document.getElementById('takePhotoButton');
+        document.getElementById('countSelector').setAttribute('disabled', true);
+        const timerDisplay = document.getElementById('timerDisplay');
+        const countDisplay = document.getElementById('countDisplay');
+        const timerOverlay = document.getElementById('timerOverlay');
+
+        takePhotoButton.setAttribute('disabled', 'true');
+
+        // Periksa ketersediaan kamera
+        if (!mediaStream) {
+            console.error("Camera not initialized");
+            initCamera(); // Coba inisialisasi ulang kamera
+            setTimeout(() => runSquencePhoto(e), 1000); // Coba ulang sequence setelah 1 detik
+            return;
+        }
+
+        // Jika sudah mencapai batas foto, langsung keluar
+        if (currentPhotoIndex > 3) {
+            return;
+        }
+
+        let count = countDown;
+        timerDisplay.textContent = count;
+        takePhotoButton.textContent = 'Get Ready!';
+        countDisplay.classList.remove('hidden');
+
+        const countdownInterval = setInterval(() => {
+            count--;
+            timerDisplay.textContent = count;
+            takePhotoButton.textContent = 'Standby!';
+
+            if (count === 0) {
+                takePhotoButton.textContent = 'Cizz!';
+                timerOverlay.classList.remove('hidden');
+                clearInterval(countdownInterval);
+
+                // Ambil foto saat hitungan mencapai 0
+                takePhotoWithCapture();
+
+                // Jika masih ada foto yang perlu diambil, lanjutkan
+                setTimeout(() => {
+                    document.getElementById('nextStep').classList.remove('hidden');
+                    takePhotoButton.style.display = 'none';
+                    document.getElementById('resetButton').style.display = 'flex';
+                    takePhotoButton.setAttribute('disabled', 'true');
+                    timerOverlay.classList.add('hidden');
+                    takePhotoButton.textContent = 'Retake';
+                    document.querySelectorAll('#retakeButton').forEach((item) => item.classList.remove('hidden'));
                 }, 500);
             }
         }, 1000);
@@ -400,8 +465,63 @@
         });
     }
 
+
+    function retakePhoto(e) {
+        document.querySelectorAll('#retakeButton').forEach((item) => item.classList.add('hidden'));
+        // Reset counter dan status
+        currentPhotoIndex = e;
+
+        // console.log(e);
+        // console.log(currentPhotoIndex);
+
+        // Reset tombol dan elemen UI
+        const takePhotoButton = document.getElementById('takePhotoButton');
+        if (takePhotoButton) {
+            takePhotoButton.removeAttribute('disabled');
+            takePhotoButton.textContent = 'Take Photo';
+        }
+        takePhotoButton.style.display = 'flex';
+        document.getElementById('resetButton').style.display = 'none';
+        document.getElementById('countSelector').removeAttribute('disabled');
+        // Sembunyikan tombol next step
+        const nextStep = document.getElementById('nextStep');
+        if (nextStep) {
+            nextStep.classList.add('hidden');
+        }
+
+        // // Reset semua canvas
+        // for (let i = 0; i <= 3; i++) {
+        const canvas = document.getElementById('takePhotoCanvas' + e);
+        const preview = document.getElementById('previewDownload' + e);
+
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        if (preview) {
+            const cty = preview.getContext('2d');
+            cty.clearRect(0, 0, preview.width, preview.height);
+        }
+        // }
+
+        // // Reset overlay dan timer
+        const timerOverlay = document.getElementById('timerOverlay');
+        const countDisplay = document.getElementById('countDisplay');
+
+        if (timerOverlay) timerOverlay.classList.add('hidden');
+        if (countDisplay) countDisplay.classList.add('hidden');
+
+        // Opsional: reinisialisasi kamera jika diperlukan
+        // initCamera();
+        takePhotoButton.setAttribute('onclick', 'runSquenceRetakePhoto()');
+
+        console.log('Photos ' + e + ' reset successfully');
+    }
+
     function resetPhotos(e) {
         if (e) e.preventDefault();
+        document.querySelectorAll('#retakeButton').forEach((item) => item.classList.add('hidden'));
 
         // Reset counter dan status
         currentPhotoIndex = 1;

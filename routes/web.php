@@ -23,6 +23,14 @@ Route::get('/spesial-photo', function () {
     return view('spesial-photo');
 })->name('spesial');
 
+Route::get('/login', function () {
+    abort(404);
+})->name('login');
+
+Route::get('/register', function () {
+    abort(404);
+})->name('register');
+
 // Route::view('dashboard', 'dashboard')
 //     ->middleware(['auth', 'verified'])
 //     ->name('dashboard');

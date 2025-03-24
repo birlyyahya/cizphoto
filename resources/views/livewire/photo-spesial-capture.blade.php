@@ -442,24 +442,33 @@
     }
 
     function downloadImage(e) {
-        if (e) e.preventDefault();
-        const element = document.getElementById('framePhotobooth');
+    if (e) e.preventDefault();
+    const element = document.getElementById('framePhotobooth');
 
-        html2canvas(element).then(function(canvas) {
-            const imageURL = canvas.toDataURL('image/png');
+    // Set options to handle SVG properly
+    const options = {
+        allowTaint: true,
+        useCORS: true,
+        scale: 2, // Higher quality
+        logging: true,
+        foreignObjectRendering: true // This can help with SVG rendering
+    };
 
-            // Buat elemen link baru untuk download
-            const downloadLink = document.createElement('a');
-            downloadLink.href = imageURL;
-            downloadLink.download = 'Birthdayy-photo.png';
+    html2canvas(element, options).then(function(canvas) {
+        const imageURL = canvas.toDataURL('image/png');
 
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }).catch(function(error) {
-            console.error('Error capturing image:', error);
-        });
-    }
+        // Create download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageURL;
+        downloadLink.download = 'Birthdayy-photo.png';
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }).catch(function(error) {
+        console.error('Error capturing image:', error);
+    });
+}
 
     function resetPhotos(e) {
         if (e) e.preventDefault();
